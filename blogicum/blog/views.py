@@ -1,7 +1,7 @@
+from blog.models import Category, Post
+
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
-
-from blog.models import Post, Category
 
 
 POSTS_PER_PAGE = 5
@@ -19,7 +19,7 @@ def get_base_posts_queryset():
 
 def index(request):
     template_name = 'blog/index.html'
-    posts = get_base_posts_queryset().order_by('-pub_date')[:5]
+    posts = get_base_posts_queryset().order_by('-pub_date')[:POSTS_PER_PAGE]
     context = {'post_list': posts}
     return render(request, template_name, context)
 
@@ -36,15 +36,7 @@ def category_posts(request, category_slug):
     category = get_object_or_404(Category,
                                  slug=category_slug,
                                  is_published=True)
-    category_posts = Post.objects.select_related(
-        'author',
-        'location',
-        'category'
-    ).filter(
-        is_published=True,
-        category=category,
-        pub_date__lte=timezone.now()
-    )
+    category_posts = get_base_posts_queryset().filter(category=category)
     context = {
         'category': category,
         'post_list': category_posts

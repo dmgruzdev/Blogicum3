@@ -1,10 +1,13 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
+
 
 User = get_user_model()
 
+LENGTH_TEXT = 25
 
-class BaseModel(models.Model):
+
+class Is_published_Created(models.Model):
     is_published = models.BooleanField(
         default=True,
         verbose_name='Опубликовано',
@@ -19,7 +22,7 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Location(BaseModel):
+class Location(Is_published_Created):
     name = models.CharField(max_length=256, verbose_name='Название места')
 
     class Meta:
@@ -27,10 +30,10 @@ class Location(BaseModel):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self):
-        return self.name
+        return self.name[:LENGTH_TEXT]
 
 
-class Category(BaseModel):
+class Category(Is_published_Created):
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     slug = models.SlugField(
@@ -45,16 +48,18 @@ class Category(BaseModel):
         verbose_name_plural = 'Категории'
 
     def __str__(self):
-        return self.title[:25]
+        return self.title[:LENGTH_TEXT]
 
 
-class Post(BaseModel):
+class Post(Is_published_Created):
     title = models.CharField(max_length=256, verbose_name='Заголовок')
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
-        help_text='Если установить дату и время в будущем — '
-                  'можно делать отложенные публикации.'
+        help_text=(
+            'Если установить дату и время в будущем — '
+            'можно делать отложенные публикации.'
+        )
     )
     author = models.ForeignKey(
         User,
@@ -83,4 +88,4 @@ class Post(BaseModel):
         verbose_name_plural = 'Публикации'
 
     def __str__(self):
-        return self.title[:25]
+        return self.title[:LENGTH_TEXT]
