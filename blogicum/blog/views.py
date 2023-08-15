@@ -19,7 +19,7 @@ def get_base_posts_queryset():
 
 def index(request):
     template_name = 'blog/index.html'
-    posts = get_base_posts_queryset().order_by('-pub_date')[:POSTS_PER_PAGE]
+    posts = get_base_posts_queryset().order_by('pub_date')[:POSTS_PER_PAGE]
     context = {'post_list': posts}
     return render(request, template_name, context)
 
